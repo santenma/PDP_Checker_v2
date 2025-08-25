@@ -7,7 +7,7 @@ beautifulsoup4==4.12.3
 # Visualización
 plotly==5.22.0
 wordcloud==1.9.3
-pillow==10.3.0
+# Pillow is a dependency of wordcloud; avoid pinning to allow Py3.13-compatible wheels
 
 # Matching / texto
 rapidfuzz==3.9.0
@@ -21,4 +21,4 @@ Babel==2.15.0
 # w3lib==2.2.1
 # rdflib==6.3.2
 # html5lib==1.1
-# lxml==4.9.4
+# lxml (requires system libraries; intentionally omitted)
