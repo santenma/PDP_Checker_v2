@@ -1,0 +1,32 @@
+[theme]
+base = "light"
+primaryColor = "#4ECDC4"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F6F8FA"
+textColor = "#0F172A"
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+fileWatcherType = "auto"
+maxUploadSize = 200
+port = 8501
+
+[browser]
+gatherUsageStats = false
+
+[client]
+showErrorDetails = true
+toolbarMode = "auto"
+
+[runner]
+fastReruns = true
+
+[deprecation]
+showfileUploaderEncoding = false
+showPyplotGlobalUse = false
+
+[logger]
+level = "info"
