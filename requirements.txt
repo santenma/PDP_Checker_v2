@@ -1,67 +1,64 @@
-+# ============================================
-+# Core Dependencies
-+# ============================================
-+streamlit>=1.32.0,<2.0.0
-+pandas>=2.0.0,<3.0.0
-+numpy>=1.24.0,<2.0.0
-+requests>=2.31.0,<3.0.0
-+beautifulsoup4>=4.12.0,<5.0.0
+# ============================================
+# Core Dependencies
+# ============================================
+streamlit==1.32.0
+pandas==2.2.2
+numpy==1.26.4
+requests==2.32.3
+beautifulsoup4==4.12.3
  
-+# ============================================
-+# Data Visualization
-+# ============================================
-+plotly>=5.18.0,<6.0.0
-+wordcloud>=1.9.0
-+matplotlib>=3.7.0,<4.0.0  # Required by wordcloud
-+Pillow>=10.0.0  # Image processing for wordcloud
+# ============================================
+# Data Visualization
+# ============================================
+plotly==5.22.0
+# wordcloud==1.9.3  # Comentado temporalmente - puede causar problemas
+# matplotlib==3.8.3  # Comentado - solo necesario para wordcloud
+# Pillow==10.3.0  # Comentado - solo necesario para wordcloud
  
-+# ============================================
-+# Text Processing & Matching
-+# ============================================
-+rapidfuzz>=3.6.0,<4.0.0
-+python-Levenshtein>=0.20.0  # C extension for faster fuzzy matching
-+unicodedata2>=15.0.0  # Better unicode normalization
+# ============================================
+# Text Processing & Matching
+# ============================================
+rapidfuzz==3.9.0
+# python-Levenshtein==0.25.0  # Comentado - requiere compilación C
+# unicodedata2==15.1.0  # Comentado - no esencial
  
-+# ============================================
-+# Price Parsing & Internationalization
-+# ============================================
-+price-parser>=0.3.4
-+Babel>=2.14.0
-+python-dateutil>=2.8.0
+# ============================================
+# Price Parsing & Internationalization
+# ============================================
+price-parser==0.3.4
+Babel==2.15.0
+python-dateutil==2.9.0
 
-+# ============================================
-+# Structured Data Extraction (CRITICAL)
-+# ============================================
-+extruct>=0.16.0,<1.0.0
-+w3lib>=2.1.0
-+html-text>=0.5.0
-+jstyleson>=0.0.2  # JSON with comments parsing
-+pyRdfa3>=3.5.0  # RDFa parsing
-+rdflib>=6.3.0,<8.0.0  # RDF processing
-+rdflib-jsonld>=0.6.0  # JSON-LD support
-+mf2py>=1.1.0  # Microformats parsing
-+
-+# HTML parsing backends (use html5lib as fallback if lxml fails)
-+html5lib>=1.1
-+# lxml is optional but recommended - will use html5lib if not available
-+# Users can install separately: pip install lxml>=4.9.0
-+
-+# ============================================
-+# Export & Reporting
-+# ============================================
-+openpyxl>=3.1.0  # Excel writing
-+XlsxWriter>=3.1.0  # Advanced Excel formatting
-+python-docx>=1.0.0  # Word documents (future feature)
-+
-+# ============================================
-+# Performance & Caching
-+# ============================================
-+diskcache>=5.6.0  # Persistent cache
-+aiohttp>=3.9.0  # Async HTTP (future improvement)
-+tenacity>=8.2.0  # Advanced retry logic
-+
-+# ============================================
-+# Development & Debugging (optional)
-+# ============================================
-+# python-dotenv>=1.0.0  # .env file support
-+# loguru>=0.7.0  # Better logging
+# ============================================
+# Structured Data Extraction (CRITICAL)
+# ============================================
+extruct==0.17.0
+w3lib==2.2.1
+html-text==0.6.2
+# jstyleson==0.0.2  # Comentado - no esencial
+pyRdfa3==3.6.2
+rdflib==7.0.0
+rdflib-jsonld==0.6.2
+mf2py==2.0.1
+html5lib==1.1
+# lxml==5.1.0  # Comentado - puede causar problemas de compilación
+
+# ============================================
+# Export & Reporting
+# ============================================
+openpyxl==3.1.2
+XlsxWriter==3.2.0
+# python-docx==1.1.0  # Comentado - feature futura
+
+# ============================================
+# Performance & Caching (opcional)
+# ============================================
+# diskcache==5.6.3  # Comentado - cache persistente
+# aiohttp==3.9.3  # Comentado - async HTTP
+# tenacity==8.3.0  # Comentado - retry avanzado
+
+# ============================================
+# Development & Debugging (optional)
+# ============================================
+# python-dotenv>=1.0.0  # .env file support
+# loguru>=0.7.0  # Better logging
