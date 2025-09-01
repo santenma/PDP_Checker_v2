@@ -71,7 +71,32 @@ _CAPTCHA_PATTERNS = [
     "are you a robot",
     "bot detection",
     "temporarily unavailable due to",
+    "access denied",
+    "cloudflare",
+    "please wait",
+    "checking your browser",
+    "ddos protection",
+    "forbidden",
 ]
+
+# Sitios conocidos con protección anti-bot fuerte
+PROTECTED_SITES = {
+    "pccomponentes.com": {
+        "force_zenrows": True,
+        "js_render": True,
+        "premium_proxy": True,
+        "antibot": True,
+        "wait": 3000,  # Esperar 3s para que cargue JS
+        "wait_for": ".product-name, h1, [itemprop='name']",  # Esperar elementos del producto
+        "block_resources": "image,media,font",  # Bloquear recursos pesados
+    },
+    "mediamarkt.es": {
+        "force_zenrows": True,
+        "js_render": True,
+        "wait": 2000,
+    },
+    # Añadir más sitios según necesidad
+}
 
 def looks_like_captcha(html: str) -> bool:
     if not html:
@@ -91,6 +116,22 @@ def _validate_url(url: str) -> None:
     if not parsed.scheme or not parsed.netloc:
         raise ValueError(f"URL inválida: {url}")
 
++def _get_site_config(url: str) -> Dict[str, Any]:
+    """
+    Obtiene configuración específica para sitios con protección anti-bot
+    """
+    parsed = urlparse(url)
+    domain = parsed.netloc.lower()
+    
+    # Buscar configuración exacta o con subdominios
+    for site, config in PROTECTED_SITES.items():
+        if site in domain or domain.endswith(f".{site}"):
+            logger.info(f"Usando configuración especial para {site}")
+            return config.copy()
+    
+    # Configuración por defecto
+    return {}
+
 # ------------------------------------------------------
 # Options
 # ------------------------------------------------------
@@ -107,6 +148,8 @@ class FetchOptions:
     headers: Optional[Dict[str, str]] = None  # si None, se genera con UA
     zenrows_params: Optional[Dict[str, str]] = None  # extras para Zenrows
     allow_redirects: bool = True
+    wait: Optional[int] = None  # ms para esperar después de cargar
+    wait_for: Optional[str] = None  # selector CSS para esperar
 
 # ------------------------------------------------------
 # Core requests
@@ -135,6 +178,15 @@ def _zenrows_request(url: str, opts: FetchOptions) -> Optional[Response]:
         params["premium_proxy"] = "true"
     if opts.antibot:
         params["antibot"] = "true"
+    
+    # Parámetros adicionales para bypass
+    if opts.wait:
+        params["wait"] = str(opts.wait)
+    if opts.wait_for:
+        params["wait_for"] = opts.wait_for
+    if opts.zenrows_params and "block_resources" in opts.zenrows_params:
+        params["block_resources"] = opts.zenrows_params["block_resources"]
+        
     if opts.zenrows_params:
         # Permite inyectar parámetros adicionales como 'block_resources', 'custom_headers', etc.
         params.update({k: str(v) for k, v in opts.zenrows_params.items()})
@@ -178,6 +230,19 @@ def fetch_html(url: str,
     hace fallback a Zenrows (si hay API key). Reintenta con backoff.
     """
     _validate_url(url)
+    
+    # Obtener configuración específica del sitio
+    site_config = _get_site_config(url)
+    
+    # Aplicar configuración del sitio si existe
+    if site_config:
+        force_zenrows = site_config.get("force_zenrows", force_zenrows)
+        js_render = site_config.get("js_render", js_render)
+        if not zenrows_params:
+            zenrows_params = {}
+        zenrows_params.update({k: v for k, v in site_config.items() 
+                              if k not in ["force_zenrows", "js_render", "premium_proxy", "antibot"]})
+                       
     opts = FetchOptions(
         timeout=timeout,
         retries=max(0, retries),
@@ -187,6 +252,8 @@ def fetch_html(url: str,
         js_render=js_render,
         headers=headers,
         zenrows_params=zenrows_params,
+        wait=site_config.get("wait"),
+        wait_for=site_config.get("wait_for"),
     )
 
     attempt = 0
@@ -211,6 +278,17 @@ def fetch_html(url: str,
             # Último intento; si hay respuesta, devuélvela aunque sea vacía
             if resp is not None and resp.text is not None:
                 return resp.text
+
+            # Log específico para debugging
+            if resp:
+                logger.warning(f"URL {url} devolvió status {resp.status_code}")
+                if resp.status_code == 403:
+                    logger.error(f"403 Forbidden en {url} - El sitio está bloqueando el acceso")
+                elif resp.status_code == 503:
+                    logger.error(f"503 Service Unavailable en {url} - Posible protección anti-bot")
+            else:
+                logger.error(f"No se pudo conectar con {url}")
+            
             return ""
 
         # Backoff exponencial antes de reintentar
