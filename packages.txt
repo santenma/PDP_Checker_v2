@@ -1,0 +1,10 @@
+# packages.txt
+# Dependencias del sistema para Streamlit Cloud
+
+# Para lxml (si se habilita)
+# libxml2-dev
+# libxslt-dev
+
+# Para Pillow/wordcloud (si se habilita)
+# libjpeg-dev
+# zlib1g-dev
