@@ -1,24 +1,67 @@
-# Core
-streamlit==1.34.0
-pandas==2.2.2
-requests==2.32.3
-beautifulsoup4==4.12.3
++# ============================================
++# Core Dependencies
++# ============================================
++streamlit>=1.32.0,<2.0.0
++pandas>=2.0.0,<3.0.0
++numpy>=1.24.0,<2.0.0
++requests>=2.31.0,<3.0.0
++beautifulsoup4>=4.12.0,<5.0.0
+ 
++# ============================================
++# Data Visualization
++# ============================================
++plotly>=5.18.0,<6.0.0
++wordcloud>=1.9.0
++matplotlib>=3.7.0,<4.0.0  # Required by wordcloud
++Pillow>=10.0.0  # Image processing for wordcloud
+ 
++# ============================================
++# Text Processing & Matching
++# ============================================
++rapidfuzz>=3.6.0,<4.0.0
++python-Levenshtein>=0.20.0  # C extension for faster fuzzy matching
++unicodedata2>=15.0.0  # Better unicode normalization
+ 
++# ============================================
++# Price Parsing & Internationalization
++# ============================================
++price-parser>=0.3.4
++Babel>=2.14.0
++python-dateutil>=2.8.0
 
-# Visualización
-plotly==5.22.0
-wordcloud==1.9.3
-# Pillow is a dependency of wordcloud; avoid pinning to allow Py3.13-compatible wheels
-
-# Matching / texto
-rapidfuzz==3.9.0
-
-# Precio e i18n
-price-parser==0.3.4
-Babel==2.15.0
-
-# Optional structured data / parsing (commented out to avoid lxml build issues)
-# extruct==0.17.0
-# w3lib==2.2.1
-# rdflib==6.3.2
-# html5lib==1.1
-# lxml (requires system libraries; intentionally omitted)
++# ============================================
++# Structured Data Extraction (CRITICAL)
++# ============================================
++extruct>=0.16.0,<1.0.0
++w3lib>=2.1.0
++html-text>=0.5.0
++jstyleson>=0.0.2  # JSON with comments parsing
++pyRdfa3>=3.5.0  # RDFa parsing
++rdflib>=6.3.0,<8.0.0  # RDF processing
++rdflib-jsonld>=0.6.0  # JSON-LD support
++mf2py>=1.1.0  # Microformats parsing
++
++# HTML parsing backends (use html5lib as fallback if lxml fails)
++html5lib>=1.1
++# lxml is optional but recommended - will use html5lib if not available
++# Users can install separately: pip install lxml>=4.9.0
++
++# ============================================
++# Export & Reporting
++# ============================================
++openpyxl>=3.1.0  # Excel writing
++XlsxWriter>=3.1.0  # Advanced Excel formatting
++python-docx>=1.0.0  # Word documents (future feature)
++
++# ============================================
++# Performance & Caching
++# ============================================
++diskcache>=5.6.0  # Persistent cache
++aiohttp>=3.9.0  # Async HTTP (future improvement)
++tenacity>=8.2.0  # Advanced retry logic
++
++# ============================================
++# Development & Debugging (optional)
++# ============================================
++# python-dotenv>=1.0.0  # .env file support
++# loguru>=0.7.0  # Better logging
