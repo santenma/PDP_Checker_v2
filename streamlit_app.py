@@ -100,6 +100,30 @@ class ProductAnalysisService:
     
     def __init__(self, config: AppConfig):
         self.config = config
+        self.problem_sites = set()  # Track de sitios problemáticos
+
+    def _check_site_accessibility(self, url: str) -> bool:
+        """
+        Verifica si un sitio es accesible antes de intentar extraer
+        """
+        from core.http import head
+        
+        domain = urlparse(url).netloc
+        if domain in self.problem_sites:
+            logger.warning(f"Sitio {domain} marcado como problemático")
+            return False
+        
+        # Intentar HEAD request rápido
+        try:
+            response = head(url, timeout=10)
+            if response and response.status_code == 403:
+                logger.warning(f"Sitio {domain} devuelve 403 - requiere Zenrows")
+                self.problem_sites.add(domain)
+                return False
+            return True
+        except Exception as e:
+            logger.error(f"Error verificando {url}: {e}")
+            return False
         
     def extract_pdps(self, urls: List[str], progress_callback=None) -> List[Dict[str, Any]]:
         """
@@ -110,6 +134,15 @@ class ProductAnalysisService:
         
         # Usar fetch_many_html para paralelización
         logger.info(f"Extrayendo {len(urls)} PDPs...")
+
+        # Pre-verificación de sitios problemáticos
+        for url in urls:
+            domain = urlparse(url).netloc
+            if "pccomponentes" in domain.lower():
+                logger.warning(f"Detectado PCComponentes - forzando Zenrows con configuración especial")
+                self.config.force_zenrows = True
+                self.config.js_render = True
+                break        
         
         fetch_kwargs = {
             "force_zenrows": self.config.force_zenrows,
@@ -370,7 +403,25 @@ class PDPAnalysisTab:
             if not urls:
                 st.error("❌ Añade al menos una URL para analizar")
                 return
+
+            # Verificar sitios especiales
+            special_sites_detected = []
+            for url in urls:
+                domain = urlparse(url).netloc.lower()
+                if "pccomponentes" in domain:
+                    special_sites_detected.append("PCComponentes")
+                elif "mediamarkt" in domain:
+                    special_sites_detected.append("MediaMarkt")
+                elif "amazon" in domain:
+                    special_sites_detected.append("Amazon")
             
+            if special_sites_detected:
+                st.info(f"""
+                ℹ️ **Sitios con protección anti-bot detectados**: {', '.join(set(special_sites_detected))}
+                
+                Usando configuración especial con Zenrows para estos sitios...
+                """)
+                       
             # Extraer PDPs con progress
             progress_bar = st.progress(0)
             status_text = st.empty()
