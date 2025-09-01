@@ -42,6 +42,8 @@ try:
     WORDCLOUD_OK = True
 except ImportError:
     WORDCLOUD_OK = False
+    # No es crítico, continuar sin wordcloud
+    pass
 
 # ------------------------------------------------------
 # Configuración y logging
@@ -51,6 +53,15 @@ logging.basicConfig(
     format='%(asctime)s | %(levelname)s | %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Desactivar warnings de bibliotecas
+import warnings
+warnings.filterwarnings('ignore')
+
+# Verificar que estamos en Streamlit Cloud
+import sys
+if 'streamlit' in sys.modules:
+    logger.info("Ejecutando en entorno Streamlit")
 
 st.set_page_config(
     page_title="Análisis Competitivo de Productos",
